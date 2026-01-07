@@ -1,0 +1,11 @@
+pytest
+playwright
+requests
+python-dotenv
+openai
+pandas
+pytest-xdist
+pytest-html
+allure-pytest
+pywinauto
+locust

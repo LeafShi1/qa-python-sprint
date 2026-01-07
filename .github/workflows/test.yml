@@ -1,0 +1,31 @@
+
+name: Python Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+      - run: playwright install
+      - run: pytest -q --junitxml=report.xml
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: report.xml
+      - name: AI Postmortem (on failure)
+        if: failure()
+        run: python scripts/ai_postmortem.py logs/test.log > ai_report.md
+      - name: Upload AI report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-postmortem
+          path: ai_report.md
